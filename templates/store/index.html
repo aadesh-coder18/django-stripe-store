@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load store_extras %}
+{% block title %}Store · Django Stripe{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-lg-7">
+    <h3 class="mb-3">Products</h3>
+    <form id="buy-form" action="{% url 'create_checkout_session' %}" method="post" class="card card-body shadow-sm">
+      {% csrf_token %}
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th class="text-end">Price</th>
+              <th class="text-center" style="width: 120px;">Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in products %}
+            <tr>
+              <td>{{ p.name }}</td>
+              <td class="text-end">{{ p.price_cents|cents_to_money }}</td>
+              <td class="text-center">
+                <input type="number" min="0" step="1" name="qty_{{ p.id }}" value="0" class="form-control form-control-sm text-center" />
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="d-flex justify-content-end">
+        <button id="buy-button" type="submit" class="btn btn-primary">Buy with Stripe</button>
+      </div>
+      <small class="text-muted mt-2">Use Stripe test card 4242 4242 4242 4242 with any future expiry, any CVC.</small>
+    </form>
+  </div>
+  <div class="col-lg-5">
+    <h3 class="mb-3">My Orders</h3>
+    <div class="card card-body shadow-sm">
+      {% if orders %}
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>When</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for o in orders %}
+            <tr>
+              <td>{{ o.id }}</td>
+              <td>{{ o.total_cents|cents_to_money }}</td>
+              <td><span class="badge {% if o.status == 'paid' %}bg-success{% elif o.status == 'created' %}bg-secondary{% else %}bg-danger{% endif %}">{{ o.status|title }}</span></td>
+              <td>{{ o.created_at|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted mb-0">No paid orders yet. Complete a purchase to see it here.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

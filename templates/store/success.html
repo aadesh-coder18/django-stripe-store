@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Success · Django Stripe{% endblock %}
+{% block content %}
+<div class="text-center py-5">
+  <h2 class="text-success">Payment Successful</h2>
+  <p class="lead">Thank you! Your payment has been processed.</p>
+  <p class="text-muted">Session: {{ session_id }}</p>
+  <a href="/" class="btn btn-outline-primary mt-3">Back to Store</a>
+</div>
+{% endblock %}
